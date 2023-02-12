@@ -60,7 +60,7 @@ int main(int argc, char **argv){
     }
 
     //step0 : read camera params
-    std::string params_path = "/home/duan/mywork_station/cv_project/avm/data/front.yaml";
+    std::string params_path = "../data/front.yaml";
     CameraPara camera_params;
     readCameraParams(params_path, camera_params);
     LOG(INFO) << "camera para is ::::::::::::::::::::::::::::::::::::::::";
@@ -78,6 +78,7 @@ int main(int argc, char **argv){
     cv::Mat undistort_image;
     cv::fisheye::undistortImage(image, undistort_image, camera_params.camera_matrix, camera_params.dist_coeffs, new_intrinsic);
 
+    cv::imwrite("../data/front_undistort.png", undistort_image);
     cv::namedWindow("undistort", cv::WINDOW_NORMAL);
     cv::imshow("undistort", undistort_image);
     cv::waitKey(0);
@@ -85,7 +86,8 @@ int main(int argc, char **argv){
     //step2 : find correspondences
     std::vector<cv::Point2f> image_points;
     std::vector<cv::Point2f> object_points;
-    
+
+
 
     //step3: compute perspective matrix
 
