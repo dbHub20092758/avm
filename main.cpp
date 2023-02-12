@@ -52,7 +52,10 @@ void readCameraParams(const std::string &filename, CameraPara &para)
 int main(int argc, char **argv)
 {
 
-    cv::Mat image = cv::imread("../data/front.png", 0);
+    std::string path = "../data/";
+    std::string camera = "left";
+    std::string image_name = path + camera + ".png";
+    cv::Mat image = cv::imread(image_name, 0);
     cv::imshow("image", image);
     cv::waitKey(0);
 
@@ -63,7 +66,7 @@ int main(int argc, char **argv)
     }
 
     // step0 : read camera params
-    std::string params_path = "../data/front.yaml";
+    std::string params_path = path + camera + ".yaml";
     CameraPara camera_params;
     readCameraParams(params_path, camera_params);
     LOG(INFO) << "camera para is ::::::::::::::::::::::::::::::::::::::::";
@@ -81,7 +84,8 @@ int main(int argc, char **argv)
     cv::Mat undistort_image;
     cv::fisheye::undistortImage(image, undistort_image, camera_params.camera_matrix, camera_params.dist_coeffs, new_intrinsic);
 
-    cv::imwrite("../data/front_undistort.png", undistort_image);
+    std::string undistort_name = path + camera + "_undistort.png";
+    cv::imwrite(undistort_name, undistort_image);
     cv::namedWindow("undistort", cv::WINDOW_NORMAL);
     cv::imshow("undistort", undistort_image);
     cv::waitKey(0);
@@ -90,13 +94,30 @@ int main(int argc, char **argv)
     std::vector<cv::Point2f> image_points;
     std::vector<cv::Point2f> object_points;
 
-    image_points.emplace_back(231, 264);
-    image_points.emplace_back(535, 233);
-    image_points.emplace_back(53, 387);
-    image_points.emplace_back(862, 324);
-
     BoardConfig board_config;
-    board_config.getFrontBoard(object_points);
+
+    if (camera == "front")
+    {
+        image_points.emplace_back(231, 264);
+        image_points.emplace_back(535, 233);
+        image_points.emplace_back(53, 387);
+        image_points.emplace_back(862, 324);
+
+        board_config.getFrontBoard(object_points);
+    }
+    else if (camera == "left")
+    {
+        // image_points.emplace_back(777, 218);
+        // image_points.emplace_back(437, 239);
+        // image_points.emplace_back(913, 398);
+        // image_points.emplace_back(200, 487);
+
+        image_points.emplace_back(409, 238);
+        image_points.emplace_back(753, 220);
+        image_points.emplace_back(117, 498);
+        image_points.emplace_back(873, 404);
+        board_config.getLeftBoard(object_points);
+    }
 
     // step3: compute perspective matrix
     cv::Mat transform = cv::getPerspectiveTransform(image_points, object_points);
